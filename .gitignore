@@ -1,0 +1,27 @@
+# Environnement virtuel (TRÈS IMPORTANT)
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.joblib
+*.pkl
+*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Streamlit
+.streamlit/secrets.toml

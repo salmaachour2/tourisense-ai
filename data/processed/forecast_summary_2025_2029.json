@@ -1,0 +1,177 @@
+[
+  {
+    "Annee": 2021,
+    "Indicateur": "wb_arrivals",
+    "Prevision": 7288263.4,
+    "Lower": 5137371.0,
+    "Upper": 9263647.7
+  },
+  {
+    "Annee": 2022,
+    "Indicateur": "wb_arrivals",
+    "Prevision": 7783517.4,
+    "Lower": 5706683.2,
+    "Upper": 9850185.3
+  },
+  {
+    "Annee": 2023,
+    "Indicateur": "wb_arrivals",
+    "Prevision": 8225665.0,
+    "Lower": 6125735.9,
+    "Upper": 10256234.4
+  },
+  {
+    "Annee": 2024,
+    "Indicateur": "wb_arrivals",
+    "Prevision": 7140185.1,
+    "Lower": 5008274.5,
+    "Upper": 9310980.9
+  },
+  {
+    "Annee": 2025,
+    "Indicateur": "wb_arrivals",
+    "Prevision": 7711253.5,
+    "Lower": 5509345.1,
+    "Upper": 9891462.1
+  },
+  {
+    "Annee": 2024,
+    "Indicateur": "recettes_devises",
+    "Prevision": 2903.8,
+    "Lower": 1850.2,
+    "Upper": 4047.5
+  },
+  {
+    "Annee": 2025,
+    "Indicateur": "recettes_devises",
+    "Prevision": 4691.1,
+    "Lower": 3656.3,
+    "Upper": 5745.8
+  },
+  {
+    "Annee": 2026,
+    "Indicateur": "recettes_devises",
+    "Prevision": 6685.1,
+    "Lower": 5678.9,
+    "Upper": 7767.7
+  },
+  {
+    "Annee": 2027,
+    "Indicateur": "recettes_devises",
+    "Prevision": 8886.0,
+    "Lower": 7834.8,
+    "Upper": 9912.1
+  },
+  {
+    "Annee": 2028,
+    "Indicateur": "recettes_devises",
+    "Prevision": 3639.8,
+    "Lower": 2570.2,
+    "Upper": 4718.3
+  },
+  {
+    "Annee": 2025,
+    "Indicateur": "capacite_lits",
+    "Prevision": 233.2,
+    "Lower": 230.0,
+    "Upper": 236.4
+  },
+  {
+    "Annee": 2026,
+    "Indicateur": "capacite_lits",
+    "Prevision": 234.3,
+    "Lower": 224.3,
+    "Upper": 244.5
+  },
+  {
+    "Annee": 2027,
+    "Indicateur": "capacite_lits",
+    "Prevision": 235.3,
+    "Lower": 217.3,
+    "Upper": 254.7
+  },
+  {
+    "Annee": 2028,
+    "Indicateur": "capacite_lits",
+    "Prevision": 236.3,
+    "Lower": 208.4,
+    "Upper": 266.7
+  },
+  {
+    "Annee": 2029,
+    "Indicateur": "capacite_lits",
+    "Prevision": 237.4,
+    "Lower": 195.9,
+    "Upper": 281.5
+  },
+  {
+    "Annee": 2024,
+    "Indicateur": "taux_occupation",
+    "Prevision": 17.8,
+    "Lower": -0.7,
+    "Upper": 37.3
+  },
+  {
+    "Annee": 2025,
+    "Indicateur": "taux_occupation",
+    "Prevision": 23.7,
+    "Lower": 4.2,
+    "Upper": 42.9
+  },
+  {
+    "Annee": 2026,
+    "Indicateur": "taux_occupation",
+    "Prevision": 29.6,
+    "Lower": 9.4,
+    "Upper": 50.5
+  },
+  {
+    "Annee": 2027,
+    "Indicateur": "taux_occupation",
+    "Prevision": 35.5,
+    "Lower": 14.9,
+    "Upper": 54.2
+  },
+  {
+    "Annee": 2028,
+    "Indicateur": "taux_occupation",
+    "Prevision": 18.6,
+    "Lower": -1.2,
+    "Upper": 38.4
+  },
+  {
+    "Annee": 2024,
+    "Indicateur": "emplois",
+    "Prevision": 90.0,
+    "Lower": 89.2,
+    "Upper": 90.8
+  },
+  {
+    "Annee": 2025,
+    "Indicateur": "emplois",
+    "Prevision": 90.0,
+    "Lower": 87.4,
+    "Upper": 92.5
+  },
+  {
+    "Annee": 2026,
+    "Indicateur": "emplois",
+    "Prevision": 90.0,
+    "Lower": 85.2,
+    "Upper": 94.5
+  },
+  {
+    "Annee": 2027,
+    "Indicateur": "emplois",
+    "Prevision": 90.0,
+    "Lower": 82.6,
+    "Upper": 97.5
+  },
+  {
+    "Annee": 2028,
+    "Indicateur": "emplois",
+    "Prevision": 88.1,
+    "Lower": 78.2,
+    "Upper": 98.8
+  }
+]
