@@ -1,10 +1,3 @@
-Indicateur,Annee,Valeur,Dataset
-Nombre d’établissements,2016,824,etablissements
-Nombre d’établissements,2017,848,etablissements
-Nombre d’établissements,2018,868,etablissements
-Nombre d’établissements,2019,876,etablissements
-Nombre d’établissements,2020,875,etablissements
-Nombre d’établissements,2021,893,etablissements
-Nombre d’établissements,2022,895,etablissements
-Nombre d’établissements,2023,905,etablissements
-Nombre d’établissements,2024,913,etablissements
+version https://git-lfs.github.com/spec/v1
+oid sha256:88219ea9905f3440782a4bca6aa3da094977d018441e948909aef8495a1360fd
+size 501

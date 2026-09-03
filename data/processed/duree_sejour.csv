@@ -1,10 +1,3 @@
-Indicateur,Annee,Valeur,Dataset
-Durée moyenne de séjour,2015,3,duree_sejour
-Durée moyenne de séjour,2016,3,duree_sejour
-Durée moyenne de séjour,2017,3,duree_sejour
-Durée moyenne de séjour,2018,3,duree_sejour
-Durée moyenne de séjour,2019,5,duree_sejour
-Durée moyenne de séjour,2020,4,duree_sejour
-Durée moyenne de séjour,2021,4,duree_sejour
-Durée moyenne de séjour,2022,5,duree_sejour
-Durée moyenne de séjour,2023,5,duree_sejour
+version https://git-lfs.github.com/spec/v1
+oid sha256:aefc42224b11604a37075899140e3232f58042428da2ae99052bc84af63dbaee
+size 456
