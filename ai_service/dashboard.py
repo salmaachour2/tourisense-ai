@@ -9,6 +9,8 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 from pathlib import Path
+import folium
+from streamlit_folium import st_folium
 
 # ============================================================
 # CONFIGURATION
@@ -79,10 +81,37 @@ def load_all_data():
         if (reviews_dir / "bertopic_topics_info.csv").exists():
             df_topic_info = pd.read_csv(reviews_dir / "bertopic_topics_info.csv")
 
-    return df_hist, df_forecast, df_metrics, df_monthly, df_monthly_forecast, df_bert, df_topics, df_topic_info
+    # --- Module 3 : Alertes ---
+    alerts_dir = base / "alerts"
+    df_alerts = pd.DataFrame()
+    df_alerts_full = pd.DataFrame()
+
+    if (alerts_dir / "alerts_monthly_v2.csv").exists():
+        df_alerts = pd.read_csv(alerts_dir / "alerts_monthly_v2.csv")
+        if "Date" in df_alerts.columns:
+            df_alerts["Date"] = pd.to_datetime(df_alerts["Date"])
+
+    if (base / "early_warning_full_results_v2.csv").exists():
+        df_alerts_full = pd.read_csv(base / "early_warning_full_results_v2.csv")
+        if "ds" in df_alerts_full.columns:
+            df_alerts_full["ds"] = pd.to_datetime(df_alerts_full["ds"])
+
+           # --- Module 4 : Régions / Clusters ---
+    df_regions = pd.DataFrame()
+    if (base / "regions_clusters.csv").exists():
+        df_regions = pd.read_csv(base / "regions_clusters.csv")
+    elif (base / "regions_performance.csv").exists():
+        df_regions = pd.read_csv(base / "regions_performance.csv")     
+
+    return df_hist, df_forecast, df_metrics, df_monthly, df_monthly_forecast, df_bert, df_topics, df_topic_info,df_alerts, df_alerts_full, df_regions
 
 
-df_hist, df_forecast, df_metrics, df_monthly, df_monthly_forecast, df_bert, df_topics, df_topic_info = load_all_data()
+(
+    df_hist, df_forecast, df_metrics,
+    df_monthly, df_monthly_forecast,
+    df_bert, df_topics, df_topic_info,
+    df_alerts, df_alerts_full, df_regions
+) = load_all_data()
 
 # ============================================================
 # SIDEBAR
@@ -92,7 +121,8 @@ st.sidebar.markdown("---")
 
 module = st.sidebar.radio(
     "Module",
-    options=["Module 1 – Forecasting", "Module 2 – Tendances (NLP)"],
+    options=["Module 1 – Forecasting", "Module 2 – Tendances (NLP)",
+        "Module 3 – Alerte précoce", "Module 4 – Cartographie"],
     index=0
 )
 
@@ -258,13 +288,14 @@ if module == "Module 1 – Forecasting":
 # ============================================================
 # ===================== MODULE 2 =============================
 # ============================================================
-else:
+elif module == "Module 2 – Tendances (NLP)":
     st.sidebar.markdown("**Analyse des tendances**")
     vue_nlp = st.sidebar.radio(
         "Vue NLP",
         options=["Sentiment Analysis", "Topics / Tendances"],
         index=0
     )
+    
 
     st.title("Analyse des tendances émergentes – Avis touristiques")
     st.caption("Prototype TouriSense.AI | Module 2 : BERT + BERTopic")
@@ -460,10 +491,277 @@ else:
                 st.dataframe(sample_topic[cols_show].head(15), use_container_width=True, hide_index=True)
 
 # ============================================================
+# ===================== MODULE 3 =============================
+# ============================================================
+elif module == "Module 3 – Alerte précoce":
+
+    st.sidebar.markdown("**Système d'alerte précoce**")
+    st.sidebar.caption("Prophet + Isolation Forest + Sentiment")
+
+    niveau_filter = st.sidebar.multiselect(
+        "Niveaux d'alerte",
+        options=["CRITICAL", "WARNING", "INFO"],
+        default=["CRITICAL", "WARNING", "INFO"]
+    )
+
+    st.title("Système d'alerte précoce – Tourisme Tunisien")
+    st.caption("Prototype TouriSense.AI | Module 3 : Détection d'anomalies (arrivées + sentiment)")
+
+    if df_alerts.empty:
+        st.warning("Aucune alerte trouvée. Lance d'abord le script `03_early_warning_system.py`.")
+    else:
+        # ---------- KPIs ----------
+        st.subheader("Résumé des alertes")
+
+        if not df_alerts_full.empty and "alert_level" in df_alerts_full.columns:
+            counts = df_alerts_full["alert_level"].value_counts()
+        else:
+            counts = df_alerts["alert_level"].value_counts()
+
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("CRITICAL", int(counts.get("CRITICAL", 0)))
+        c2.metric("WARNING", int(counts.get("WARNING", 0)))
+        c3.metric("INFO", int(counts.get("INFO", 0)))
+        c4.metric("NORMAL", int(counts.get("NORMAL", 0)))
+
+        st.markdown("---")
+
+        # ---------- Graphique évolution ----------
+        st.subheader("Évolution des écarts (arrivées réelles vs attendues)")
+
+        if not df_alerts_full.empty and "residual_pct" in df_alerts_full.columns:
+            plot_df = df_alerts_full.copy()
+            fig = go.Figure()
+
+            fig.add_trace(go.Scatter(
+                x=plot_df["ds"],
+                y=plot_df["residual_pct"],
+                mode="lines+markers",
+                name="Écart %",
+                line=dict(color="#3498db", width=2)
+            ))
+
+            # Lignes de seuils
+            fig.add_hline(y=-15, line_dash="dash", line_color="orange", annotation_text="WARNING (-15%)")
+            fig.add_hline(y=-30, line_dash="dash", line_color="red", annotation_text="CRITICAL (-30%)")
+            fig.add_hline(y=0, line_color="gray", line_width=1)
+
+            fig.update_layout(
+                xaxis_title="Date",
+                yaxis_title="Écart par rapport à la prévision (%)",
+                height=420,
+                hovermode="x unified"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        # ---------- Tableau des alertes ----------
+        st.subheader("Liste des alertes")
+
+        df_view = df_alerts.copy()
+        if niveau_filter:
+            df_view = df_view[df_view["alert_level"].isin(niveau_filter)]
+
+        df_view = df_view.sort_values("Date", ascending=False)
+
+        # Colonnes à afficher
+        cols_to_show = [c for c in [
+            "Date", "Annee", "Mois", "Arrivees_reelles", "Arrivees_attendues",
+            "Ecart_pct", "Part_avis_negatifs", "Note_moyenne",
+            "alert_level", "alert_message"
+        ] if c in df_view.columns]
+
+        display = df_view[cols_to_show].copy()
+
+        if "Date" in display.columns:
+            display["Date"] = display["Date"].dt.strftime("%Y-%m")
+
+        # Formatage
+        format_dict = {}
+        if "Arrivees_reelles" in display.columns:
+            format_dict["Arrivees_reelles"] = "{:,.0f}"
+        if "Arrivees_attendues" in display.columns:
+            format_dict["Arrivees_attendues"] = "{:,.0f}"
+        if "Ecart_pct" in display.columns:
+            format_dict["Ecart_pct"] = "{:.1f}%"
+        if "Part_avis_negatifs" in display.columns:
+            format_dict["Part_avis_negatifs"] = "{:.1%}"
+        if "Note_moyenne" in display.columns:
+            format_dict["Note_moyenne"] = "{:.2f}"
+
+        st.dataframe(
+            display.style.format(format_dict),
+            use_container_width=True,
+            hide_index=True,
+            height=450
+        )
+
+        # ---------- Dernières alertes critiques ----------
+        st.subheader("Alertes CRITICAL récentes")
+        critical = df_alerts[df_alerts["alert_level"] == "CRITICAL"].sort_values("Date", ascending=False).head(5)
+
+        if critical.empty:
+            st.success("Aucune alerte CRITICAL récente.")
+        else:
+            for _, row in critical.iterrows():
+                date_str = row["Date"].strftime("%Y-%m") if hasattr(row["Date"], "strftime") else str(row["Date"])
+                st.error(
+                    f"**{date_str}** — {row.get('alert_message', '')}\n\n"
+                    f"Arrivées réelles : {row.get('Arrivees_reelles', 0):,.0f} | "
+                    f"Attendues : {row.get('Arrivees_attendues', 0):,.0f} | "
+                    f"Écart : {row.get('Ecart_pct', 0):.1f}%"
+                )
+
+# ============================================================
+# ===================== MODULE 4 =============================
+# ============================================================
+elif module == "Module 4 – Cartographie":
+
+    st.sidebar.markdown("**Cartographie intelligente**")
+    st.sidebar.caption("Clustering régional + carte interactive")
+
+    st.title("Cartographie intelligente – Régions touristiques")
+    st.caption("Prototype TouriSense.AI | Module 4 : Performance régionale + KMeans + Folium")
+
+    if df_regions.empty:
+        st.warning("Données régionales non trouvées. Lance d'abord `04_regional_data_prep.py` puis `04_clustering_regions.py`.")
+    else:
+        # ---------- KPIs clusters ----------
+        st.subheader("Répartition des régions par cluster")
+
+        if "cluster_label" in df_regions.columns:
+            counts = df_regions["cluster_label"].value_counts()
+            c1, c2, c3, c4 = st.columns(4)
+            c1.metric("Performante", int(counts.get("Performante", 0)))
+            c2.metric("Intermédiaire", int(counts.get("Intermédiaire", 0)))
+            c3.metric("Fragile", int(counts.get("Fragile", 0)))
+            c4.metric("Total régions", len(df_regions))
+        else:
+            st.info("Les labels de cluster ne sont pas encore disponibles.")
+
+        st.markdown("---")
+
+        # ---------- Tableau ----------
+        st.subheader("Performance des régions")
+
+        cols_show = [c for c in [
+            "region", "cluster_label", "capacite_lits", "nb_etablissements",
+            "taux_occupation", "nb_avis", "note_moyenne", "part_negatif", "score_performance"
+        ] if c in df_regions.columns]
+
+        display = df_regions[cols_show].copy()
+        if "score_performance" in display.columns:
+            display = display.sort_values("score_performance", ascending=False)
+
+        format_dict = {}
+        if "capacite_lits" in display.columns:
+            format_dict["capacite_lits"] = "{:,.0f}"
+        if "nb_etablissements" in display.columns:
+            format_dict["nb_etablissements"] = "{:,.0f}"
+        if "taux_occupation" in display.columns:
+            format_dict["taux_occupation"] = "{:.1f}"
+        if "nb_avis" in display.columns:
+            format_dict["nb_avis"] = "{:,.0f}"
+        if "note_moyenne" in display.columns:
+            format_dict["note_moyenne"] = "{:.2f}"
+        if "part_negatif" in display.columns:
+            format_dict["part_negatif"] = "{:.1%}"
+        if "score_performance" in display.columns:
+            format_dict["score_performance"] = "{:.2f}"
+
+        st.dataframe(
+            display.style.format(format_dict),
+            use_container_width=True,
+            hide_index=True
+        )
+
+        # ---------- Graphique barres ----------
+        if "score_performance" in df_regions.columns and "region" in df_regions.columns:
+            st.subheader("Score de performance par région")
+            fig_bar = px.bar(
+                df_regions.sort_values("score_performance", ascending=True),
+                x="score_performance",
+                y="region",
+                color="cluster_label" if "cluster_label" in df_regions.columns else None,
+                color_discrete_map={
+                    "Performante": "#27ae60",
+                    "Intermédiaire": "#f39c12",
+                    "Fragile": "#e74c3c"
+                },
+                title="Classement des régions",
+                labels={"score_performance": "Score", "region": "Région"}
+            )
+            fig_bar.update_layout(height=480)
+            st.plotly_chart(fig_bar, use_container_width=True)
+
+        # ---------- Carte Folium ----------
+        st.subheader("Carte interactive des clusters")
+
+        REGION_COORDS = {
+            "Nabeul - Hammamet": (36.40, 10.62),
+            "Sousse - Kairouan": (35.83, 10.64),
+            "Monastir - Skanes": (35.78, 10.83),
+            "Mahdia - Sfax": (35.50, 11.05),
+            "Mahdia": (35.50, 11.05),
+            "Tunis - Zaghouan": (36.65, 10.18),
+            "Djerba - Zarzis": (33.80, 10.85),
+            "Gafsa - Tozeur": (34.10, 8.70),
+            "Tozeur - Nefta": (33.92, 8.13),
+            "Tabarka - Aïn Draham": (36.95, 8.76),
+            "Bizerte - Beja": (37.10, 9.50),
+            "Sbeitla - Kasserine": (35.20, 8.80),
+        }
+
+        CLUSTER_COLORS = {
+            "Performante": "green",
+            "Intermédiaire": "orange",
+            "Fragile": "red",
+        }
+
+        m = folium.Map(location=[34.8, 9.5], zoom_start=6, tiles="OpenStreetMap")
+
+        for _, row in df_regions.iterrows():
+            region = row.get("region")
+            coords = REGION_COORDS.get(region)
+            if not coords:
+                continue
+
+            label = row.get("cluster_label", "Intermédiaire")
+            color = CLUSTER_COLORS.get(label, "blue")
+
+            popup = f"""
+            <b>{region}</b><br>
+            Cluster : {label}<br>
+            Capacité : {row.get('capacite_lits', float('nan')):,.0f}<br>
+            Occupation : {row.get('taux_occupation', float('nan')):.1f}%<br>
+            Note : {row.get('note_moyenne', float('nan')):.2f}/5
+            """
+
+            folium.CircleMarker(
+                location=coords,
+                radius=14,
+                color=color,
+                fill=True,
+                fill_color=color,
+                fill_opacity=0.75,
+                popup=popup,
+                tooltip=f"{region} ({label})"
+            ).add_to(m)
+
+        st_folium(m, width=None, height=520)
+
+        # ---------- Lecture métier ----------
+        st.subheader("Lecture métier des clusters")
+        if "cluster_label" in df_regions.columns:
+            for label in ["Performante", "Intermédiaire", "Fragile"]:
+                regs = df_regions.loc[df_regions["cluster_label"] == label, "region"].tolist()
+                if regs:
+                    st.markdown(f"**{label}** : {', '.join(regs)}")
+
+# ============================================================
 # PIED DE PAGE
 # ============================================================
 st.markdown("---")
 st.caption(
     "TouriSense.AI – Prototype d'aide à la décision | "
-    "Module 1 : Prophet | Module 2 : BERT + BERTopic"
+    "Module 1 : Prophet | Module 2 : BERT + BERTopic | Module 3 : Alerte précoce | Module 4 : Cartographie"
 )
