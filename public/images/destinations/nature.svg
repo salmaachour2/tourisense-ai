@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" role="img" aria-label="Nature et montagnes tunisiennes">
+  <defs>
+    <linearGradient id="sky" x2="0" y2="1">
+      <stop stop-color="#83c4c3"/>
+      <stop offset="1" stop-color="#e8dba9"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#sky)" d="M0 0h900v500H0z"/>
+  <circle cx="719" cy="112" r="48" fill="#ffe7a6"/>
+  <path fill="#76998a" d="M0 326 170 145l130 157L460 95l237 250 103-126 100 106v175H0z"/>
+  <path fill="#e6e3cb" d="m460 95 57 150-64-32-53 43z"/>
+  <path fill="#b5c5a4" d="m170 145 41 94-48-24-42 42z"/>
+  <path fill="#3d796c" d="M0 353c180-72 311-12 454 10 172 27 299-54 446-41v178H0z"/>
+  <path fill="#2d5e55" d="M0 414c134-49 267-25 391 10 151 42 324-40 509-20v96H0z"/>
+  <g fill="#f2d99d">
+    <path d="M109 401h14v51h-14zm-14 16h42v8H95zm-7-3 9-24 9 24zm27 0 9-24 9 24z"/>
+    <path d="M773 367h15v56h-15zm-15 17h45v9h-45zm-7-4 9-24 9 24zm29 0 9-24 9 24z"/>
+  </g>
+  <path fill="none" stroke="#a7d7c1" stroke-width="12" d="M335 392c51 15 76 14 119 4s69 4 109 12"/>
+</svg>

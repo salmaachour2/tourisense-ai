@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" role="img" aria-label="Détente au bord de la mer en Tunisie">
+  <defs>
+    <linearGradient id="sky" x2="0" y2="1">
+      <stop stop-color="#86ced1"/>
+      <stop offset="1" stop-color="#f5d79f"/>
+    </linearGradient>
+    <linearGradient id="water" x2="0" y2="1">
+      <stop stop-color="#55b9b8"/>
+      <stop offset="1" stop-color="#217e87"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#sky)" d="M0 0h900v500H0z"/>
+  <circle cx="710" cy="110" r="55" fill="#fff0bd"/>
+  <path fill="#fff7e3" d="M0 250c150-30 263-14 405 5 151 20 329-12 495-35v106H0z"/>
+  <path fill="url(#water)" d="M0 286c196 9 334 47 496 28 145-17 272-35 404-10v196H0z"/>
+  <path fill="#edc787" d="M0 364c142-28 271 11 392 54 168 60 331-19 508-6v88H0z"/>
+  <path fill="#a85e43" d="M112 230c2-61 20-109 51-144 28 35 42 82 43 144z"/>
+  <path fill="#387b65" d="M73 129c-26-30-28-58-14-82 28 4 48 20 60 47 13-35 35-51 68-49 5 29-4 55-28 80 34-18 63-15 88 9-11 30-35 47-70 49 21 12 33 29 36 51H88c-8-22-3-42 15-60-31-1-52-14-63-39 8-13 19-15 33-6z"/>
+  <path fill="#a85e43" d="M133 220h57v74h-57z"/>
+  <path fill="none" stroke="#d7f0dc" stroke-width="8" opacity=".8" d="M423 328c72 13 104 5 166-5m-57 72c70 12 127 4 190-12m-576-3c65 8 110 4 153-6"/>
+</svg>

@@ -1,0 +1,58 @@
+:root {
+  --sea-950: #0E2A38;
+  --sea-900: #163C48;
+  --sea-800: #1F4E5C;
+  --sea-700: #2C6472;
+  --dune-400: #D89A4E;
+  --dune-300: #E6B679;
+  --olive-400: #7C8B4A;
+  --palm-400: #3E6E5C;
+  --palm-300: #5C9686;
+  --chott-100: #F3EFE6;
+  --ink-900: #12211F;
+  --mist-400: #8CA3A8;
+  --mist-200: #CBDAD6;
+  --clay-500: #B65B3D;
+  --radius: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', Roboto, Arial, sans-serif;
+  background: var(--sea-950);
+  color: var(--mist-200);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+}
+
+img,
+svg {
+  max-width: 100%;
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

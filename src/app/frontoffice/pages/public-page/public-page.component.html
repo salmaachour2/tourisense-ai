@@ -1,0 +1,691 @@
+<app-navbar></app-navbar>
+
+<main class="public-workspace">
+  <!-- En-tête de l'espace grand public avec Passeport d'Explorateur -->
+  <header class="workspace-header">
+    <div class="header-container">
+      <div class="header-main">
+        <div class="brand-badge">
+          <span class="pulse-dot"></span>
+          <span>Assistant Voyageur IA • TouriSense</span>
+        </div>
+        <h1 class="page-title">Explorez la Tunisie avec votre Assistant IA</h1>
+        <p class="page-subtitle">
+          Discutez naturellement avec l’IA pour trouver les plus belles destinations tunisiennes selon vos envies, budget et style de voyage.
+        </p>
+      </div>
+
+      <!-- Actions d'exploration & Passeport -->
+      <div class="header-actions">
+        <!-- Badge Passeport d'Explorateur -->
+        <div class="passport-badge" title="Destinations découvertes durant votre session">
+          <span class="passport-icon">🧭</span>
+          <div class="passport-info">
+            <span class="passport-label">Passeport Explorateur</span>
+            <span class="passport-score"><strong>{{ exploredCount }}</strong> / {{ totalDestinationsCount }} perles explorées 🏆</span>
+          </div>
+        </div>
+
+        <!-- Bouton Ludique Surprenez-moi -->
+        <button class="action-btn surprise" (click)="surpriseMe()" [disabled]="loading" title="Tirer une destination magique au sort">
+          <span class="dice-icon" [class.spinning]="isSurprising">🎲</span>
+          <span>Surprenez-moi !</span>
+        </button>
+
+        <button *ngIf="selectedRecommendation" class="action-btn primary" (click)="exportTrip()" title="Télécharger votre carnet de voyage">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>Mon Carnet (.txt)</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Barre de filtres et critères express -->
+    <div class="filters-bar">
+      <div class="filters-container">
+        <!-- Ambiances (Vibes) -->
+        <div class="vibes-scroll">
+          <button
+            *ngFor="let v of vibes"
+            class="vibe-chip"
+            [class.active]="selectedVibe === v.id"
+            (click)="selectedVibe = v.id; onFilterChange()"
+          >
+            <span class="vibe-icon">{{ v.icon }}</span>
+            <span>{{ v.label }}</span>
+          </button>
+        </div>
+
+        <!-- Filtres avancés (Gouvernorat, Budget, Compagnons) -->
+        <div class="selectors-group">
+          <div class="select-wrapper">
+            <label for="gov-select">Région :</label>
+            <select id="gov-select" [(ngModel)]="selectedGovernorate" (change)="onFilterChange()">
+              <option *ngFor="let g of governorates" [value]="g">{{ g }}</option>
+            </select>
+          </div>
+
+          <div class="select-wrapper">
+            <label for="budget-select">Budget :</label>
+            <select id="budget-select" [(ngModel)]="selectedBudget" (change)="onFilterChange()">
+              <option *ngFor="let b of budgetOptions" [value]="b">{{ b }}</option>
+            </select>
+          </div>
+
+          <div class="select-wrapper">
+            <label for="travelers-select">Équipe :</label>
+            <select id="travelers-select" [(ngModel)]="selectedTravelers" (change)="onFilterChange()">
+              <option *ngFor="let t of travelerOptions" [value]="t">{{ t }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Corps principal : Workspace 2 Colonnes Structurées -->
+  <div class="workspace-grid">
+    <!-- COLONNE GAUCHE : CHATBOT CONVERSATIONNEL CLAIR & ÉPURÉ -->
+    <section class="chat-column" aria-label="Dialogue avec l'assistant IA">
+      <div class="chat-card">
+        <!-- En-tête du Chatbot -->
+        <div class="chat-header-bar">
+          <div class="chat-header-user">
+            <div class="bot-avatar-badge">
+              <div class="bot-avatar-inner">🤖</div>
+              <span class="online-indicator"></span>
+            </div>
+            <div class="bot-meta">
+              <div class="bot-name-row">
+                <span class="bot-name">TouriSense AI</span>
+                <span class="ai-pill">Guide IA 24/7</span>
+              </div>
+              <span class="bot-status-text">Assistant de voyage en ligne</span>
+            </div>
+          </div>
+
+          <div class="chat-header-tools">
+            <button class="icon-tool-btn" (click)="resetChat()" title="Recommencer une nouvelle conversation">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                <path d="M21 3v5h-5"/>
+                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                <path d="M8 16H3v5"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Zone de défilement des messages (Pure et Lisible) -->
+        <div class="chat-messages" #chatWindowRef>
+          <div
+            *ngFor="let m of messages"
+            class="message-row"
+            [class.user-row]="m.from === 'user'"
+            [class.bot-row]="m.from === 'bot'"
+          >
+            <div class="message-avatar" [class.bot-avatar]="m.from === 'bot'" [class.user-avatar]="m.from === 'user'">
+              <span *ngIf="m.from === 'bot'">🤖</span>
+              <span *ngIf="m.from === 'user'">👤</span>
+            </div>
+
+            <div class="message-content">
+              <div class="message-meta">
+                <span class="author-name">{{ m.from === 'bot' ? 'TouriSense Guide' : 'Vous' }}</span>
+                <span class="message-time">{{ m.time | date:'HH:mm' }}</span>
+              </div>
+
+              <div class="message-bubble">
+                <p class="bubble-text">{{ m.text }}</p>
+
+                <!-- Bandeau de pastilles destinations suggérées (Léger & non encombrant) -->
+                <div *ngIf="m.recommendations && m.recommendations.length > 0" class="bot-rec-pills">
+                  <span class="pills-title">💡 Destinations recommandées (cliquez pour afficher) :</span>
+                  <div class="pills-list">
+                    <button
+                      *ngFor="let rec of m.recommendations"
+                      class="rec-pill-btn"
+                      [class.active]="selectedRecommendation?.id === rec.id"
+                      (click)="selectRecommendation(rec)"
+                      title="Afficher {{ rec.title }} sur la droite"
+                    >
+                      <img [src]="destinationImages[rec.category]" [alt]="rec.title" class="pill-thumb" />
+                      <span class="pill-name">{{ rec.title }}</span>
+                      <span class="pill-score">✨ {{ rec.matchScore }}%</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Sources web / résultats externes -->
+                <div *ngIf="m.webSources && m.webSources.length > 0" class="web-source-panel">
+                  <span class="suggestions-label">Sources web :</span>
+                  <div class="web-source-list">
+                    <a
+                      *ngFor="let source of m.webSources"
+                      class="web-source-item"
+                      [href]="source.url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img *ngIf="source.imageUrl" [src]="source.imageUrl" [alt]="source.title" class="web-source-thumb" />
+                      <div class="web-source-copy">
+                        <strong>{{ source.title }}</strong>
+                        <small *ngIf="source.snippet">{{ source.snippet }}</small>
+                        <span>{{ source.url }}</span>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Informations complémentaires enrichies -->
+                <div *ngIf="m.enrichment && m.enrichment.length > 0" class="enrichment-panel">
+                  <span class="suggestions-label">Informations vérifiées :</span>
+                  <div class="enrichment-list">
+                    <div *ngFor="let item of m.enrichment" class="enrichment-item">
+                      <img *ngIf="item.imageUrl" [src]="item.imageUrl" [alt]="item.title || 'source'" class="enrichment-thumb" />
+                      <div class="enrichment-copy">
+                        <strong>{{ item.title || 'Source' }}</strong>
+                        <span *ngIf="item.phone">📞 {{ item.phone }}</span>
+                        <span *ngIf="item.website"><a [href]="item.website" target="_blank" rel="noopener noreferrer">🌐 Site web</a></span>
+                        <span *ngIf="item.address">📍 {{ item.address }}</span>
+                        <span *ngIf="item.note">ℹ️ {{ item.note }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Suggestions de relance / follow-ups -->
+                <div *ngIf="m.suggestedFollowUps && m.suggestedFollowUps.length > 0" class="follow-up-suggestions">
+                  <span class="suggestions-label">Suggestions :</span>
+                  <div class="follow-up-chips">
+                    <button
+                      *ngFor="let s of m.suggestedFollowUps"
+                      class="follow-up-chip"
+                      (click)="sendQuick(s)"
+                    >
+                      <span class="sparkle-icon">✨</span>
+                      <span>{{ s }}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Indicateur d'écriture IA -->
+          <div *ngIf="loading" class="typing-indicator-row">
+            <div class="message-avatar bot-avatar">🤖</div>
+            <div class="typing-bubble">
+              <div class="typing-dots">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </div>
+              <span class="typing-text">L'IA parcourt les destinations...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pied du Chat & Zone de saisie -->
+        <div class="chat-footer">
+          <!-- Suggestions rapides en pied de chat -->
+          <div class="quick-prompts-bar">
+            <div class="quick-chips">
+              <button
+                *ngFor="let q of quickSuggestions"
+                class="quick-chip"
+                (click)="sendQuick(q)"
+              >
+                <span>{{ q }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Formulaire de saisie Messenger -->
+          <form (ngSubmit)="send()" class="chat-composer">
+            <div class="composer-input-container">
+              <textarea
+                #textareaRef
+                [(ngModel)]="userInput"
+                name="userInput"
+                rows="1"
+                placeholder="Décrivez vos envies de voyage..."
+                (keydown)="handleKeydown($event)"
+              ></textarea>
+            </div>
+
+            <button type="submit" class="send-btn" [disabled]="!userInput.trim() || loading" title="Envoyer">
+              <span *ngIf="!loading">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="22" y1="2" x2="11" y2="13"/>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+              </span>
+              <span *ngIf="loading" class="spinner"></span>
+            </button>
+          </form>
+          <div class="composer-subhint">
+            <span>Tapez <strong>Entrée ↵</strong> pour envoyer • <strong>Maj + Entrée</strong> pour saut de ligne</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLONNE DROITE : LE GRAND EXPLORATEUR DE DESTINATIONS -->
+    <aside class="explorer-column" aria-label="Exploration et détails de la destination">
+      <div class="explorer-card">
+        <!-- 1. Plateau supérieur : Cartes des destinations recommandées -->
+        <section class="recommendations-shelf">
+          <div class="shelf-header">
+            <div class="shelf-title-box">
+              <span class="shelf-icon">✨</span>
+              <h3>Destinations Recommandées</h3>
+              <span class="shelf-count">({{ recommendations.length }} trouvées)</span>
+            </div>
+            <span class="shelf-hint">Cliquez sur une carte pour explorer les détails</span>
+          </div>
+
+          <div class="deck-scroll-container">
+            <div
+              *ngFor="let r of recommendations"
+              class="deck-card"
+              [class.active]="selectedRecommendation?.id === r.id"
+              (click)="selectRecommendation(r)"
+            >
+              <div class="deck-card-media">
+                <img [src]="destinationImages[r.category]" [alt]="r.title" loading="lazy" />
+                <div class="deck-card-overlay">
+                  <span class="deck-match-badge">✨ {{ r.matchScore }}% Match</span>
+                  <span class="deck-weather-badge">{{ r.weather.icon }} {{ r.weather.temp }}</span>
+                </div>
+              </div>
+
+              <div class="deck-card-content">
+                <div class="deck-card-top">
+                  <h4 class="deck-card-title">{{ r.title }}</h4>
+                  <span class="deck-gov">📍 {{ r.governorate }}</span>
+                </div>
+                <p class="deck-card-tagline">{{ r.tagline }}</p>
+                <div class="deck-card-footer">
+                  <span class="deck-cost">💰 ~{{ r.estimatedCostPerDay }} DT/j</span>
+                  <button class="deck-view-btn">
+                    <span>{{ selectedRecommendation?.id === r.id ? 'Sélectionné ✓' : 'Explorer ➔' }}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Volet inférieur : Fiche détaillée de la destination sélectionnée -->
+        <section class="destination-detail-section">
+          <!-- Onglets de la Fiche -->
+          <nav class="explorer-tabs" role="tablist">
+            <button
+              class="tab-item"
+              [class.active]="activePanelTab === 'details'"
+              (click)="activePanelTab = 'details'"
+            >
+              <span>📌 Fiche Découverte</span>
+            </button>
+            <button
+              class="tab-item"
+              [class.active]="activePanelTab === 'map'"
+              (click)="activePanelTab = 'map'"
+            >
+              <span>🗺️ Carte Interactive</span>
+            </button>
+            <button
+              class="tab-item"
+              [class.active]="activePanelTab === 'itinerary'"
+              (click)="activePanelTab = 'itinerary'"
+            >
+              <span>📅 Programme 3 Jours</span>
+            </button>
+            <button
+              class="tab-item"
+              [class.active]="activePanelTab === 'calculator'"
+              (click)="activePanelTab = 'calculator'"
+            >
+              <span>💰 Simulateur Budget</span>
+            </button>
+            <button
+              class="tab-item"
+              [class.active]="activePanelTab === 'saved'"
+              (click)="activePanelTab = 'saved'"
+            >
+              <span>❤️ Favoris ({{ savedDestinations.length }})</span>
+            </button>
+          </nav>
+
+          <!-- CONTENU ONGLET 1 : FICHE DÉCOUVERTE -->
+          <div *ngIf="activePanelTab === 'details'" class="tab-content details-view">
+            <div *ngIf="selectedRecommendation as rec; else noSelection">
+              <!-- Hero Visuel avec Météo et Favoris -->
+              <div class="detail-hero">
+                <img [src]="destinationImages[rec.category]" [alt]="rec.title" class="hero-image" />
+                <div class="hero-overlay">
+                  <div class="hero-badges-left">
+                    <span class="match-badge">✨ {{ rec.matchScore }}% Recommandé</span>
+                    <span class="weather-badge-hero">{{ rec.weather.icon }} {{ rec.weather.temp }} • {{ rec.weather.condition }}</span>
+                  </div>
+                  <button
+                    class="hero-bookmark-btn"
+                    [class.bookmarked]="isBookmarked(rec)"
+                    (click)="toggleBookmark(rec, $event)"
+                    title="Ajouter aux favoris"
+                  >
+                    {{ isBookmarked(rec) ? '❤️ Enregistré' : '🤍 Enregistrer' }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="detail-body">
+                <div class="detail-header-info">
+                  <div class="title-row">
+                    <div>
+                      <span class="vibe-tag-badge">{{ rec.vibeBadge }}</span>
+                      <h2 class="detail-title">{{ rec.title }}</h2>
+                    </div>
+                    <span class="gov-pill-large">📍 Gouvernorat de {{ rec.governorate }}</span>
+                  </div>
+                  <p class="detail-tagline">{{ rec.tagline }}</p>
+                </div>
+
+                <!-- Bloc LUDIQUE "Le Saviez-vous ?" -->
+                <div class="fun-fact-card">
+                  <div class="fact-header">
+                    <span class="bulb-icon">💡</span>
+                    <strong>Le Saviez-vous ? (Anecdote de l'Explorateur)</strong>
+                  </div>
+                  <p>{{ rec.funFact }}</p>
+                </div>
+
+                <!-- Bloc Spécialité Culinaire -->
+                <div class="specialty-card">
+                  <span class="fork-icon">🥘</span>
+                  <div>
+                    <strong>Spécialité locale à savourer absolument :</strong>
+                    <span>{{ rec.mustEatSpecialty }}</span>
+                  </div>
+                </div>
+
+                <!-- Bloc Analyse IA -->
+                <div class="ai-rationale-box">
+                  <div class="ai-box-header">
+                    <span class="sparkle">✨</span>
+                    <strong>Pourquoi l'IA vous conseille cette escale :</strong>
+                  </div>
+                  <p>{{ rec.aiReasoning }}</p>
+                </div>
+
+                <!-- Métriques rapides -->
+                <div class="detail-stats-grid">
+                  <div class="stat-box">
+                    <span class="stat-label">Budget indicatif moyen</span>
+                    <span class="stat-val">~{{ rec.estimatedCostPerDay }} TND / jour</span>
+                    <span class="stat-sub">Gamme {{ rec.budgetLevel }}</span>
+                  </div>
+                  <div class="stat-box">
+                    <span class="stat-label">Meilleure période conseillée</span>
+                    <span class="stat-val">{{ rec.bestSeason }}</span>
+                    <span class="stat-sub">Climat optimal</span>
+                  </div>
+                </div>
+
+                <!-- Description détaillée -->
+                <div class="detail-section">
+                  <h3>À propos de la destination</h3>
+                  <p class="detail-description">{{ rec.description }}</p>
+                  <div class="detail-tags-list">
+                    <span *ngFor="let t of rec.tags" class="tag-pill">{{ t }}</span>
+                  </div>
+                </div>
+
+                <!-- Points forts majeurs -->
+                <div class="detail-section">
+                  <h3>Points forts & Incontournables</h3>
+                  <ul class="highlights-list">
+                    <li *ngFor="let hl of rec.highlights">
+                      <span class="hl-check">✓</span>
+                      <span>{{ hl }}</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <!-- Activités suggérées -->
+                <div class="detail-section">
+                  <h3>Activités recommandées par l'IA</h3>
+                  <div class="activities-grid">
+                    <div *ngFor="let act of rec.activities" class="activity-card">
+                      <div class="activity-top">
+                        <span class="activity-cat">{{ act.category }}</span>
+                        <span *ngIf="act.badge" class="activity-badge">{{ act.badge }}</span>
+                      </div>
+                      <h4 class="activity-name">{{ act.title }}</h4>
+                      <span class="activity-duration">⏱️ Durée : {{ act.duration }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Boutons d'action -->
+                <div class="detail-footer-actions">
+                  <button class="btn-primary-action" (click)="activePanelTab = 'itinerary'">
+                    <span>📅 Voir le programme 3 jours</span>
+                  </button>
+                  <button class="btn-secondary-action" (click)="activePanelTab = 'calculator'">
+                    <span>💰 Simuler mon budget</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONTENU ONGLET 2 : CARTE INTERACTIVE -->
+          <div *ngIf="activePanelTab === 'map'" class="tab-content map-view">
+            <div class="map-container">
+              <iframe
+                [src]="mapUrl"
+                title="Carte OpenStreetMap Tunisie"
+                class="map-iframe"
+                loading="lazy"
+              ></iframe>
+              <div class="map-status-overlay" *ngIf="selectedRecommendation">
+                <span class="pin-dot"></span>
+                <span>Position actuelle : <strong>{{ selectedRecommendation.title }}</strong> (Gouvernorat de {{ selectedRecommendation.governorate }})</span>
+              </div>
+            </div>
+
+            <div class="map-destinations-bar">
+              <h4>Pépites à proximité :</h4>
+              <div class="map-recs-scroll">
+                <div
+                  *ngFor="let r of allDestinations"
+                  class="map-rec-item"
+                  [class.active]="selectedRecommendation?.id === r.id"
+                  (click)="selectRecommendation(r, false)"
+                >
+                  <img [src]="destinationImages[r.category]" [alt]="r.title" loading="lazy" />
+                  <div class="map-rec-text">
+                    <strong>{{ r.title }}</strong>
+                    <small>{{ r.governorate }}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONTENU ONGLET 3 : ITINÉRAIRE RECOMMANDÉ (3 JOURS) -->
+          <div *ngIf="activePanelTab === 'itinerary'" class="tab-content itinerary-view">
+            <div *ngIf="selectedRecommendation as rec; else noSelection">
+              <div class="itinerary-header">
+                <h3>Programme sur-mesure : {{ rec.title }}</h3>
+                <p>Itinéraire optimisé de 3 jours généré par l'IA selon vos préférences.</p>
+              </div>
+
+              <div class="timeline-container">
+                <div *ngFor="let day of generatedItinerary" class="timeline-day-card">
+                  <div class="day-badge-col">
+                    <span class="day-num">Jour {{ day.day }}</span>
+                    <span class="day-period">{{ day.period }}</span>
+                  </div>
+                  <div class="day-content">
+                    <h4 class="day-title">{{ day.title }}</h4>
+                    <ul class="day-activities">
+                      <li *ngFor="let act of day.activities">
+                        <span class="dot-bullet"></span>
+                        <span>{{ act }}</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="itinerary-actions">
+                <button class="btn-primary-action" (click)="exportTrip()">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  <span>Télécharger ce carnet (.txt)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONTENU ONGLET 4 : SIMULATEUR DE BUDGET VOYAGE -->
+          <div *ngIf="activePanelTab === 'calculator'" class="tab-content calculator-view">
+            <div *ngIf="selectedRecommendation as rec; else noSelection">
+              <div class="calc-header">
+                <h3>Simulateur de Budget : {{ rec.title }}</h3>
+                <p>Ajustez la durée et le nombre de voyageurs pour estimer le coût total de votre séjour.</p>
+              </div>
+
+              <div class="calc-card-box">
+                <div class="calc-inputs-grid">
+                  <!-- Durée -->
+                  <div class="calc-field">
+                    <label>Durée du séjour : <strong>{{ tripDays }} jours</strong></label>
+                    <input type="range" min="1" max="14" [(ngModel)]="tripDays" class="calc-slider" />
+                    <div class="slider-ticks">
+                      <span>1 j</span>
+                      <span>3 j</span>
+                      <span>7 j</span>
+                      <span>14 j</span>
+                    </div>
+                  </div>
+
+                  <!-- Voyageurs -->
+                  <div class="calc-field">
+                    <label>Nombre de voyageurs : <strong>{{ travelersCount }} personne(s)</strong></label>
+                    <input type="range" min="1" max="8" [(ngModel)]="travelersCount" class="calc-slider" />
+                    <div class="slider-ticks">
+                      <span>Solo (1)</span>
+                      <span>Couple (2)</span>
+                      <span>Famille (4)</span>
+                      <span>Groupe (8)</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Résultat du calcul -->
+                <div class="calc-result-panel">
+                  <div class="calc-price-main">
+                    <span class="calc-price-label">Budget Total Estimé :</span>
+                    <div class="calc-price-digits">
+                      <span class="price-tnd">{{ estimatedTotalBudgetTND }} DT</span>
+                      <span class="price-eur">(~{{ estimatedTotalBudgetEUR }} €)</span>
+                    </div>
+                  </div>
+                  <div class="calc-breakdown">
+                    <div class="breakdown-item">
+                      <span>Base journalière :</span>
+                      <strong>{{ rec.estimatedCostPerDay }} DT / jour / pers.</strong>
+                    </div>
+                    <div class="breakdown-item">
+                      <span>Gamme :</span>
+                      <strong>{{ rec.budgetLevel }}</strong>
+                    </div>
+                    <div class="breakdown-item">
+                      <span>Inclus :</span>
+                      <strong>Hébergement, repas typiques & activités locales</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="calc-cta-row">
+                  <button class="btn-primary-action" (click)="activePanelTab = 'itinerary'">
+                    <span>📅 Voir l'itinéraire conseillé</span>
+                  </button>
+                  <button class="btn-secondary-action" (click)="exportTrip()">
+                    <span>💾 Enregistrer cette simulation</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONTENU ONGLET 5 : FAVORIS -->
+          <div *ngIf="activePanelTab === 'saved'" class="tab-content saved-view">
+            <div *ngIf="savedDestinations.length > 0; else noSaved">
+              <div class="saved-header">
+                <h3>Vos destinations coup de cœur ({{ savedDestinations.length }})</h3>
+                <p>Retrouvez vos sélections pour préparer votre valise et vos réservations.</p>
+              </div>
+
+              <div class="saved-cards-list">
+                <div
+                  *ngFor="let s of savedDestinations"
+                  class="saved-card"
+                  (click)="selectRecommendation(s)"
+                >
+                  <img [src]="destinationImages[s.category]" [alt]="s.title" class="saved-thumb" />
+                  <div class="saved-card-body">
+                    <div class="saved-card-top">
+                      <h4>{{ s.title }}</h4>
+                      <button
+                        class="remove-saved-btn"
+                        (click)="toggleBookmark(s, $event)"
+                        title="Retirer des favoris"
+                      >
+                        ❌
+                      </button>
+                    </div>
+                    <p>{{ s.tagline }}</p>
+                    <div class="saved-card-bottom">
+                      <span class="gov-badge">{{ s.governorate }}</span>
+                      <span class="match-score">✨ {{ s.matchScore }}% Match</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <ng-template #noSaved>
+              <div class="empty-state">
+                <span class="empty-icon">🤍</span>
+                <h4>Aucune destination enregistrée</h4>
+                <p>Cliquez sur le cœur d'une destination pour la conserver dans votre carnet.</p>
+              </div>
+            </ng-template>
+          </div>
+
+          <!-- État sans sélection -->
+          <ng-template #noSelection>
+            <div class="empty-state">
+              <span class="empty-icon">🧭</span>
+              <h4>Prêt pour l'aventure ?</h4>
+              <p>Posez une question dans le chat ou cliquez sur une carte pour afficher tous les détails.</p>
+            </div>
+          </ng-template>
+        </section>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<app-footer></app-footer>

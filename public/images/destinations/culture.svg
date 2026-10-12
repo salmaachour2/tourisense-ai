@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" role="img" aria-label="Patrimoine et architecture tunisienne">
+  <defs>
+    <linearGradient id="sky" x2="0" y2="1">
+      <stop stop-color="#8acbd0"/>
+      <stop offset="1" stop-color="#f2d8a6"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#sky)" d="M0 0h900v500H0z"/>
+  <circle cx="734" cy="103" r="44" fill="#fff0bf"/>
+  <path fill="#c88856" d="M0 350h900v150H0z"/>
+  <path fill="#f4ead2" d="M84 325h280v175H84z"/>
+  <path fill="#fff8e8" d="M62 325l162-98 162 98z"/>
+  <path fill="#d8c5a3" d="M104 350h47v150h-47zm78 0h47v150h-47zm78 0h47v150h-47z"/>
+  <path fill="#2f7880" d="M378 286h400v214H378z"/>
+  <path fill="#f8f0dc" d="M354 286l224-118 224 118z"/>
+  <path fill="#d9c8a9" d="M404 316h348v18H404z"/>
+  <path fill="#f5e9ce" d="M425 353h57v147h-57zm91 0h57v147h-57zm91 0h57v147h-57zm91 0h36v147h-36z"/>
+  <path fill="#b26042" d="M0 463c157-49 273-29 424 0v37H0z"/>
+  <path fill="#d49a63" d="M551 459c123-45 239-25 349 4v37H551z"/>
+</svg>

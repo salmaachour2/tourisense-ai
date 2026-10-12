@@ -1,0 +1,53 @@
+:host {
+  display: block;
+}
+
+.footer-shell {
+  padding: 2.5rem 1.4rem 3rem;
+  background: linear-gradient(180deg, var(--sea-900), var(--sea-950));
+  color: var(--mist-200);
+}
+
+.footer-grid {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.footer-brand {
+  margin: 0 0 0.7rem;
+  color: var(--chott-100);
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.footer-copy,
+.footer-meta p {
+  margin: 0;
+  color: var(--mist-200);
+  line-height: 1.7;
+}
+
+.footer-links {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.footer-links a {
+  color: var(--mist-200);
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  color: var(--chott-100);
+}
+
+@media (max-width: 800px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+}

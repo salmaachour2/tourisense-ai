@@ -1,0 +1,98 @@
+<app-navbar></app-navbar>
+<main class="landing-shell">
+  <section class="hero-shell">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="hero-eyebrow">Plateforme IA • tourisme intelligent</p>
+        <h1>Un socle de travail pour guider les voyageurs et les institutions.</h1>
+        <p class="hero-description">
+          TouriSense.AI relie l’expérience publique et la décision institutionnelle grâce à des modules IA simples à comprendre et à piloter.
+        </p>
+        <div class="hero-highlights">
+          <span>Conversation</span>
+          <span>Prédiction</span>
+          <span>Analyse</span>
+        </div>
+        <div class="hero-actions">
+          <a routerLink="/public" class="button button-primary">Explorer l’espace public</a>
+          <a routerLink="/institutionnel" class="button button-secondary">Ouvrir le tableau de bord</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat" *ngFor="let stat of heroStats">
+            <span class="stat-value">{{ stat.value }}</span>
+            <span class="stat-label">{{ stat.label }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="signal-map-card">
+          <svg viewBox="0 0 660 520" class="signal-map-svg" aria-hidden="true">
+            <path d="M80 380 C160 320 240 330 320 280 S520 260 580 180" fill="none" stroke="#E6B679" stroke-width="4" stroke-dasharray="12 8" class="flow-line" />
+            <path d="M120 110 C200 90 260 130 340 120 S520 130 600 95" fill="none" stroke="#5C9686" stroke-width="4" stroke-dasharray="12 8" class="flow-line" />
+            <path d="M100 250 C160 130 250 90 320 120 C380 150 420 210 470 240 C520 270 560 320 520 360 C470 410 380 420 320 400 C250 380 170 360 120 320 Z" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)" stroke-width="2" />
+            <circle cx="155" cy="220" r="14" class="node node-public" />
+            <circle cx="355" cy="175" r="14" class="node node-institutional" />
+            <circle cx="500" cy="310" r="14" class="node node-public" />
+            <circle cx="265" cy="360" r="14" class="node node-institutional" />
+            <circle cx="90" cy="325" r="14" class="node node-public" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contexte" class="section section-light">
+    <div class="section-inner">
+      <div class="section-copy">
+        <p class="eyebrow">Contexte</p>
+        <h2>Un besoin singulier pour un tourisme tunisien plus agile.</h2>
+        <p>Les solutions IA existantes restent trop spécialisées et ne relient pas toujours les besoins grand public et institutionnels.</p>
+        <p>TouriSense.AI propose une plateforme commune pour guider les voyageurs et soutenir la décision publique.</p>
+      </div>
+      <aside class="quote-card">
+        <p>« L’IA doit permettre de guider les voyageurs tout en donnant aux décideurs une anticipation opérationnelle. »</p>
+      </aside>
+    </div>
+  </section>
+
+  <section id="modules" class="section section-dark">
+    <div class="section-inner">
+      <div class="section-header">
+        <p class="eyebrow">Modules IA</p>
+        <h2>Quatre briques pour observer, prédire et recommander.</h2>
+      </div>
+      <div class="card-grid">
+        <article class="info-card" *ngFor="let module of modules">
+          <div class="card-top">
+            <h3>{{ module.title }}</h3>
+            <span class="alert-badge" *ngIf="module.title === 'Alertes précoces'">Alerte</span>
+          </div>
+          <p>{{ module.description }}</p>
+          <div class="tags">
+            <span *ngFor="let tag of module.tags">{{ tag }}</span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="espaces" class="section section-dark">
+    <div class="section-inner">
+      <div class="section-header">
+        <p class="eyebrow">Espaces</p>
+        <h2>Deux usages complémentaires.</h2>
+      </div>
+      <div class="card-grid two-col">
+        <article class="space-card" *ngFor="let space of spaces" [class.teal]="space.accent === 'teal'">
+          <h3>{{ space.title }}</h3>
+          <p>{{ space.description }}</p>
+          <ul>
+            <li *ngFor="let feature of space.features">{{ feature }}</li>
+          </ul>
+          <a [routerLink]="space.route" class="button button-primary">Découvrir</a>
+        </article>
+      </div>
+    </div>
+  </section>
+</main>
+<app-footer></app-footer>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" role="img" aria-label="Paysage méditerranéen tunisien">
+  <defs>
+    <linearGradient id="sky" x2="0" y2="1">
+      <stop stop-color="#76c8d0"/>
+      <stop offset="1" stop-color="#f1d6a2"/>
+    </linearGradient>
+    <linearGradient id="sea" x2="0" y2="1">
+      <stop stop-color="#2c9eac"/>
+      <stop offset="1" stop-color="#07566c"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#sky)" d="M0 0h900v300H0z"/>
+  <circle cx="704" cy="116" r="54" fill="#ffe6a4"/>
+  <path fill="#fff7df" opacity=".75" d="M0 259c139-43 229 15 352-9s238-71 548-7v71H0z"/>
+  <path fill="#d19b68" d="M0 276c144-66 226-45 350-66 113-20 177-74 282-42 77 24 139 11 268-18v142H0z"/>
+  <path fill="#fff6e5" d="M0 276c144-66 226-45 350-66l-10 80H0zm380-78c94-19 158-62 252-30l-3 77H367zm269-10c77 24 139 11 251-14v87H648z"/>
+  <path fill="url(#sea)" d="M0 329c143-23 263 13 411-3s303-47 489-18v192H0z"/>
+  <path fill="none" stroke="#b9e9df" stroke-width="8" opacity=".7" d="M65 385c104-17 153 19 255 4m144-20c104-16 176 3 267-14m-548 92c107-18 171 13 266 0m129-27c79-11 143 7 227-10"/>
+</svg>

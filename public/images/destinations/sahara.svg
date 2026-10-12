@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" role="img" aria-label="Dunes du Sahara tunisien">
+  <defs>
+    <linearGradient id="sky" x2="0" y2="1">
+      <stop stop-color="#e89167"/>
+      <stop offset="1" stop-color="#f7cb8c"/>
+    </linearGradient>
+    <linearGradient id="dune" x2=".8" y2="1">
+      <stop stop-color="#e9b66c"/>
+      <stop offset="1" stop-color="#b96643"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#sky)" d="M0 0h900v500H0z"/>
+  <circle cx="690" cy="132" r="62" fill="#ffe2a0"/>
+  <path fill="#d98e5b" d="M0 288c132-69 228-54 367-5s244 37 533-61v278H0z"/>
+  <path fill="url(#dune)" d="M0 370c176-90 285-83 427-25 153 62 258 34 473-63v218H0z"/>
+  <path fill="#f0c47c" d="M0 386c190-73 287-64 424-9 124 49 243 38 476-48-160 102-313 123-477 70C262 348 158 358 0 432z"/>
+  <path fill="#80543d" d="M180 326h91v-44h15v44h29v44H180z"/>
+  <path fill="#80543d" d="M201 282l34-36 34 36z"/>
+  <path fill="#f2c782" d="M217 329h16v41h-16zm31 0h16v41h-16z"/>
+  <path fill="#38645a" d="M687 296c-6-39 5-67 23-86 8 26 9 55 3 86zm21 1c5-45 26-70 51-84-3 34-18 63-43 86zm-32 2c-24-36-27-69-17-96 19 24 29 53 27 87z"/>
+  <path fill="#684b3a" d="M695 298h19l-2 31h-16z"/>
+</svg>
