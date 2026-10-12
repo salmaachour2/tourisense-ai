@@ -1,0 +1,6 @@
+.env
+.venv/
+node_modules/
+__pycache__/
+ml_index/
+data/user_queries.jsonl

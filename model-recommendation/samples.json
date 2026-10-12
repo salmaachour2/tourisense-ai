@@ -1,0 +1,22 @@
+{
+  "samples": [
+    {
+      "request": { "query": "plage tranquille pour famille", "governorate": "Nabeul" },
+      "response": {
+        "results": [
+          { "id":"hammamet", "title":"Hammamet", "description":"Plages familiales et clubs, eaux calmes.", "score":0.92, "tags":["plage","famille"], "lat":36.4000, "lon":10.6167, "governorate":"Nabeul" },
+          { "id":"sousse", "title":"Sousse", "description":"Station touristique avec longues plages et promenades.", "score":0.81, "tags":["plage","ville"], "lat":35.8256, "lon":10.6360, "governorate":"Sousse" }
+        ]
+      }
+    },
+    {
+      "request": { "query": "dunes et oasis, expérience sahara", "governorate": "Kebili" },
+      "response": {
+        "results": [
+          { "id":"douz", "title":"Douz", "description":"Porte du Sahara, dunes et balades en chameau.", "score":0.9, "tags":["desert","aventure"], "lat":33.4519, "lon":9.0289, "governorate":"Kebili" },
+          { "id":"tozeur", "title":"Tozeur", "description":"Oasis et palmeraies, paysages uniques.", "score":0.82, "tags":["oasis","paysage"], "lat":34.0167, "lon":8.1333, "governorate":"Tozeur" }
+        ]
+      }
+    }
+  ]
+}
